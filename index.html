@@ -110,22 +110,21 @@
             });
         }
         
-        // Fallback на случай, если ClientID не получен за 1 секунду
-        setTimeout(() => {
-            if (!clientId) {
-                console.warn('ClientID не получен, используем fallback');
-                console.log('Fallback: clientId =', clientId);
-                let startParam = `${utm_source}_${utm_medium}_${utm_campaign}`;
-                if (utm_term) startParam += `_${utm_term}`;
-                if (utm_content) startParam += `_${utm_content}`;
-                // ⚠️ ВАЖНО: В fallback НЕ добавляем _cid_ и _yclid_, так как ClientID не получен
-                // Это будет старая кампания без атрибуции
-                
-                console.log('Fallback ссылка:', `https://t.me/vision_flow_bot?start=${startParam}`);
-                
-                window.location.href = `https://t.me/vision_flow_bot?start=${startParam}`;
-            }
-        }, 1000);
+        // МГНОВЕННЫЙ РЕДИРЕКТ БЕЗ ОЖИДАНИЯ ClientID
+        // Формируем start параметр сразу
+        let startParam = `${utm_source}_${utm_medium}_${utm_campaign}`;
+        if (utm_term) startParam += `_${utm_term}`;
+        if (utm_content) startParam += `_${utm_content}`;
+        
+        // Если есть yclid, добавляем его
+        if (yclid && yclid !== '{logid}') {
+            startParam += `_yclid_${yclid}`;
+        }
+        
+        // МГНОВЕННО перенаправляем в бот
+        const botLink = `https://t.me/vision_flow_bot?start=${startParam}`;
+        console.log('🚀 Мгновенный редирект:', botLink);
+        window.location.href = botLink;
     </script>
 </head>
 <body>
