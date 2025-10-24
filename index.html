@@ -72,47 +72,65 @@
         console.log('URL:', window.location.href);
         console.log('ym функция доступна:', typeof ym !== 'undefined');
         
-        // Формируем базовый start параметр
-        let startParam = `${utm_source}_${utm_medium}_${utm_campaign}`;
-        if (utm_term) startParam += `_${utm_term}`;
-        if (utm_content) startParam += `_${utm_content}`;
+        // Получаем ClientID из Метрики (это КЛЮЧЕВОЙ момент!)
+        let clientId = null;
         
-        // Если есть yclid, добавляем его
-        if (yclid && yclid !== '{logid}') {
-            startParam += `_yclid_${yclid}`;
-        }
-        
-        // Функция для выполнения редиректа
-        function performRedirect(clientId = null) {
-            let finalStartParam = startParam;
-            
-            // Добавляем ClientID если есть
-            if (clientId) {
-                finalStartParam += `_cid_${clientId}`;
-            }
-            
-            // Формируем ссылку на бот
-            const botLink = `https://t.me/vision_flow_bot?start=${finalStartParam}`;
-            
-            console.log('🚀 Финальная ссылка:', botLink);
-            console.log('📊 ClientID:', clientId);
-            console.log('📊 yclid:', yclid);
-            
-            // ЕДИНСТВЕННЫЙ редирект
-            window.location.href = botLink;
-        }
-        
-        // Получаем ClientID от Метрики
+        // Ждем инициализации Метрики и получаем ClientID
         if (typeof ym !== 'undefined') {
             console.log('Метрика доступна, получаем ClientID...');
-            ym(104830688, 'getClientID', function(retrievedClientID) {
-                console.log('ClientID от Метрики:', retrievedClientID);
-                performRedirect(retrievedClientID);
+            ym(104830688, 'getClientID', function(retrievedClientID) { // ОБНОВЛЕН ID СЧЕТЧИКА
+                clientId = retrievedClientID;
+                console.log('ClientID от Метрики:', clientId);
+                
+                // Формируем start параметр для бота БЕЗ utm_ префикса
+                // Формат: source_medium_campaign_cid_CLIENTID_yclid_YCLID
+                let startParam = `${utm_source}_${utm_medium}_${utm_campaign}`;
+                
+                // Добавляем term и content если есть
+                if (utm_term) startParam += `_${utm_term}`;
+                if (utm_content) startParam += `_${utm_content}`;
+                
+                // ⚠️ ВАЖНО: Передаем ClientID от Метрики
+                if (clientId) {
+                    startParam += `_cid_${clientId}`;
+                }
+                
+                // Если есть yclid, тоже передаем для аналитики
+                if (yclid && yclid !== '{logid}') {
+                    startParam += `_yclid_${yclid}`;
+                }
+                
+                // Формируем ссылку на бот
+                const botLink = `https://t.me/vision_flow_bot?start=${startParam}`;
+                
+                console.log('Финальная ссылка:', botLink);
+                
+                // Редирект
+                window.location.href = botLink;
             });
-        } else {
-            console.log('Метрика недоступна, редирект без ClientID');
-            performRedirect();
         }
+        
+        // Fallback на случай, если ClientID не получен за 2 секунды
+        setTimeout(() => {
+            if (!clientId) {
+                console.warn('ClientID не получен за 2 секунды, используем fallback с yclid');
+                
+                // Формируем start параметр с yclid (если есть)
+                let startParam = `${utm_source}_${utm_medium}_${utm_campaign}`;
+                if (utm_term) startParam += `_${utm_term}`;
+                if (utm_content) startParam += `_${utm_content}`;
+                
+                // Если есть yclid, добавляем его
+                if (yclid && yclid !== '{logid}') {
+                    startParam += `_yclid_${yclid}`;
+                }
+                
+                // Fallback редирект
+                const botLink = `https://t.me/vision_flow_bot?start=${startParam}`;
+                console.log('🚀 Fallback редирект:', botLink);
+                window.location.href = botLink;
+            }
+        }, 2000);
     </script>
 </head>
 <body>
