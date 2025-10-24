@@ -61,6 +61,7 @@
         
         // ⚠️ ВАЖНО: yclid - это правильное название параметра от Яндекс.Директ!
         const yclid = urlParams.get('yclid');
+        const telegram_id = urlParams.get('telegram_id'); // Получаем telegram_id для сохранения ClientID
         const utm_source = urlParams.get('utm_source') || 'yandex';
         const utm_medium = urlParams.get('utm_medium') || 'cpc';
         const utm_campaign = urlParams.get('utm_campaign') || 'direct';
@@ -78,6 +79,8 @@
             ym(104830688, 'getClientID', function(retrievedClientID) { // ОБНОВЛЕН ID СЧЕТЧИКА
                 clientId = retrievedClientID;
                 console.log('ClientID от Метрики:', clientId);
+                
+                // ✅ ClientID будет сохранен в боте при получении start параметра
                 
                 // Формируем start параметр для бота БЕЗ utm_ префикса
                 // Формат: source_medium_campaign_cid_CLIENTID_yclid_YCLID
