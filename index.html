@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vision Flow Bot - Переход...</title>
     
-    <!-- Яндекс.Метрика -->
+    <!-- Яндекс.Метрика - НОВЫЙ СЧЕТЧИК -->
     <script type="text/javascript">
-       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-       m[i].l=1*new Date();
-       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=104830688', 'ym');
 
-       // ⚠️ ВАЖНО: Укажите ВАШ номер счетчика!
-       ym(104468937, "init", {
-            clickmap:true,
-            trackLinks:true,
-            accurateTrackBounce:true,
-            webvisor:false
-       });
+        ym(104830688, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
     </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/104468937" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <noscript><div><img src="https://mc.yandex.ru/watch/104830688" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Яндекс.Метрика -->
     
     <style>
@@ -65,7 +60,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         
         // ⚠️ ВАЖНО: yclid - это правильное название параметра от Яндекс.Директ!
-        // НЕ ymclid, а именно yclid!
         const yclid = urlParams.get('yclid');
         const utm_source = urlParams.get('utm_source') || 'yandex';
         const utm_medium = urlParams.get('utm_medium') || 'cpc';
@@ -81,16 +75,19 @@
         
         // Ждем инициализации Метрики и получаем ClientID
         if (typeof ym !== 'undefined') {
-            ym(104468937, 'getClientID', function(retrievedClientID) {
+            ym(104830688, 'getClientID', function(retrievedClientID) { // ОБНОВЛЕН ID СЧЕТЧИКА
                 clientId = retrievedClientID;
                 console.log('ClientID от Метрики:', clientId);
                 
-                // Формируем start параметр для бота с ClientID
-                let startParam = `utm_${utm_source}_${utm_medium}_${utm_campaign}`;
+                // Формируем start параметр для бота БЕЗ utm_ префикса
+                // Формат: source_medium_campaign_cid_CLIENTID_yclid_YCLID
+                let startParam = `${utm_source}_${utm_medium}_${utm_campaign}`;
+                
+                // Добавляем term и content если есть
                 if (utm_term) startParam += `_${utm_term}`;
                 if (utm_content) startParam += `_${utm_content}`;
                 
-                // ⚠️ ВАЖНО: Передаем ClientID от Метрики, НЕ yclid!
+                // ⚠️ ВАЖНО: Передаем ClientID от Метрики
                 if (clientId) {
                     startParam += `_cid_${clientId}`;
                 }
@@ -114,7 +111,7 @@
         setTimeout(() => {
             if (!clientId) {
                 console.warn('ClientID не получен, используем fallback');
-                let startParam = `utm_${utm_source}_${utm_medium}_${utm_campaign}`;
+                let startParam = `${utm_source}_${utm_medium}_${utm_campaign}`;
                 if (utm_term) startParam += `_${utm_term}`;
                 if (utm_content) startParam += `_${utm_content}`;
                 if (yclid) startParam += `_yclid_${yclid}`;
