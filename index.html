@@ -105,6 +105,9 @@
                 
                 console.log('Финальная ссылка:', botLink);
                 
+                // 🔧 ВРЕМЕННО: Задержка для отладки
+                alert('Основной путь! Ссылка: ' + botLink);
+                
                 // Редирект
                 window.location.href = botLink;
             });
@@ -122,6 +125,10 @@
                 // Это будет старая кампания без атрибуции
                 
                 console.log('Fallback ссылка:', `https://t.me/vision_flow_bot?start=${startParam}`);
+                
+                // 🔧 ВРЕМЕННО: Задержка для отладки
+                alert('Fallback сработал! Ссылка: ' + `https://t.me/vision_flow_bot?start=${startParam}`);
+                
                 window.location.href = `https://t.me/vision_flow_bot?start=${startParam}`;
             }
         }, 1000);
