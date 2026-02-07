@@ -109,7 +109,16 @@
             const startParam = buildStartParam(clientId);
             const botLink = 'https://t.me/vision_flow_bot?start=' + encodeURIComponent(startParam);
             console.log('Редирект:', botLink);
-            window.location.href = botLink;
+
+            // Принудительно отправляем page_view в Google Ads (если gtag уже загружен)
+            if (typeof gtag === 'function') {
+                gtag('event', 'page_view');
+            }
+
+            // Задержка 500мс — даём gtag время отправить данные до редиректа
+            setTimeout(function() {
+                window.location.href = botLink;
+            }, 500);
         }
         
         // Ждем инициализации Метрики и получаем ClientID (для Яндекс)
